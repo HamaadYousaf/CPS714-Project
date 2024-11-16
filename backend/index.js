@@ -28,6 +28,12 @@ app.get("/", async (req, res) => {
 })
 
 // Insert new feedback row to the database
+// Req.body = {
+//    "user_id": 2, - id of user submitting the feedback
+//    "rating": 1, - rating between 1-5
+//    "comments": "comment for the product"
+//    "is_anonymous": False - boolean, true if anonymous is selected
+// }
 app.post("/feedback", async (req, res) => {
     let user_id = req.body.user_id;
     const rating = req.body.rating;
