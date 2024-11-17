@@ -13,7 +13,8 @@
     "license": "ISC",
     "dependencies": {
         "@supabase/supabase-js": "^2.46.1",
-        "express": "^4.21.1"
+        "express": "^4.21.1",
+        "openai": "^4.72.0"
     },
     "devDependencies": {
         "nodemon": "^3.1.7"
