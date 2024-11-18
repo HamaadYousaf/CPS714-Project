@@ -91,8 +91,29 @@ app.post("/feedback", async (req, res) => {
         console.log(error.message)
     }
 
-    //TODO: @Farhan add an entry to the rewards table for the user
+    // Everytime a review is submitted, add 5 points for the user in the database
+    if (user_id !== null) {
+      const { data: rewardData, error: rewardError } = await supabase
+          .from('rewards')
+          .select('points')
+          .eq('user_id', user_id)
+          .single();
 
+      if (rewardError && rewardError.code !== 'PGRST116') {
+          console.log(rewardError.message);
+      } else {
+          const newPoints = (rewardData?.points || 0) + 5;
+
+          const { error: updateError } = await supabase
+              .from('rewards')
+              .update({ points: newPoints })
+              .eq('user_id', user_id);
+
+          if (updateError) {
+              console.log(updateError.message);
+          }
+      }
+  }
 
 
     return res.status(200).json({ sucess: true, data: data });
