@@ -94,10 +94,13 @@ app.post("/feedback", async (req, res) => {
     // Everytime a review is submitted, add 5 points for the user in the database
     if (user_id !== null) {
       const { data: rewardData, error: rewardError } = await supabase
-          .from('rewards')
+          .from('04_rewards')
           .select('points')
           .eq('user_id', user_id)
           .single();
+
+      //console.log("Reward Data:", rewardData);
+      //console.log("Reward Error:", rewardError);
 
       if (rewardError && rewardError.code !== 'PGRST116') {
           console.log(rewardError.message);
@@ -105,7 +108,7 @@ app.post("/feedback", async (req, res) => {
           const newPoints = (rewardData?.points || 0) + 5;
 
           const { error: updateError } = await supabase
-              .from('rewards')
+              .from('04_rewards')
               .update({ points: newPoints })
               .eq('user_id', user_id);
 
