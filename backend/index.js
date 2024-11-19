@@ -7,7 +7,7 @@ const supabaseUrl = 'https://whkhxoqclrbwsapozcsx.supabase.co/';
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indoa2h4b3FjbHJid3NhcG96Y3N4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzA5MjI2OTMsImV4cCI6MjA0NjQ5ODY5M30.r9sVK-h_VhWEaFcpbItsegw3C3ColewPJMqad1xJXkk';
 const supabase = createClient(supabaseUrl, supabaseKey)
 const openai = new OpenAI({
-    apiKey: "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",
+    apiKey: process.env.OPENAI_API_KEY,
 });
 
 const app = express()
