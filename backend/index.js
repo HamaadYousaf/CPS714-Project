@@ -59,6 +59,7 @@ app.get("/summary", async (req, res) => {
     // Return the summary along with the original data
     return res.status(200).json({ success: true, data: data, summary: summary });
 });
+
 // Insert new feedback row to the database
 // Req.body = {
 //    "user_id": 2, - id of user submitting the feedback
@@ -89,6 +90,7 @@ app.post("/feedback", async (req, res) => {
 
     if (error) {
         console.log(error.message)
+        return res.status(400).json({ sucess: false, msg: error.message });
     }
     const { data: activityData, error: activityError } = await supabase
         .from('03_activity_log')
@@ -103,6 +105,7 @@ app.post("/feedback", async (req, res) => {
 
     if (activityError) {
         console.log(activityError.message)
+        return res.status(400).json({ sucess: false, msg: activityError.message });
     }
 
     if (user_id !== null) {
@@ -111,38 +114,40 @@ app.post("/feedback", async (req, res) => {
             .select('points_balance')
             .eq('user_id', user_id)
             .single();
-      
+
         if (!pointsData) {
-          // if usr doesnt already have data, insert
-          const { error: insertError } = await supabase
-              .from('14_user_points')
-              .insert({
-                  user_id: user_id,
-                  points_balance: 5 // start with 5 points for a new user
-              });
-      
-          if (insertError) {
-              console.log(insertError.message);
-          } else {
-              console.log('New user points entry created.');
-          }
+            // if usr doesnt already have data, insert
+            const { error: insertError } = await supabase
+                .from('14_user_points')
+                .insert({
+                    user_id: user_id,
+                    points_balance: 5 // start with 5 points for a new user
+                });
+
+            if (insertError) {
+                console.log(insertError.message);
+                return res.status(400).json({ sucess: false, msg: insertError.message });
+            } else {
+                console.log('New user points entry created.');
+            }
         } else {
-          // update points if user exists
-          const newPointsBalance = pointsData.points_balance + 5;
-      
-          const { error: updateError } = await supabase
-              .from('14_user_points')
-              .update({ points_balance: newPointsBalance })
-              .eq('user_id', user_id);
-      
-          if (updateError) {
-              console.log(updateError.message);
-          } else {
-              console.log('Points balance updated.');
-          }
+            // update points if user exists
+            const newPointsBalance = pointsData.points_balance + 5;
+
+            const { error: updateError } = await supabase
+                .from('14_user_points')
+                .update({ points_balance: newPointsBalance })
+                .eq('user_id', user_id);
+
+            if (updateError) {
+                console.log(updateError.message);
+                return res.status(400).json({ sucess: false, msg: updateError.message });
+            } else {
+                console.log('Points balance updated.');
+            }
         }
-      }
-      
+    }
+
 
     return res.status(200).json({ sucess: true, data: data });
 })
