@@ -105,9 +105,44 @@ app.post("/feedback", async (req, res) => {
         console.log(activityError.message)
     }
 
-    //TODO: @Farhan add an entry to the rewards table for the user
-
-
+    if (user_id !== null) {
+        const { data: pointsData, error: pointsError } = await supabase
+            .from('14_user_points')
+            .select('points_balance')
+            .eq('user_id', user_id)
+            .single();
+      
+        if (!pointsData) {
+          // if usr doesnt already have data, insert
+          const { error: insertError } = await supabase
+              .from('14_user_points')
+              .insert({
+                  user_id: user_id,
+                  points_balance: 5 // start with 5 points for a new user
+              });
+      
+          if (insertError) {
+              console.log(insertError.message);
+          } else {
+              console.log('New user points entry created.');
+          }
+        } else {
+          // update points if user exists
+          const newPointsBalance = pointsData.points_balance + 5;
+      
+          const { error: updateError } = await supabase
+              .from('14_user_points')
+              .update({ points_balance: newPointsBalance })
+              .eq('user_id', user_id);
+      
+          if (updateError) {
+              console.log(updateError.message);
+          } else {
+              console.log('Points balance updated.');
+          }
+        }
+      }
+      
 
     return res.status(200).json({ sucess: true, data: data });
 })
