@@ -7,7 +7,7 @@ const supabaseUrl = 'https://whkhxoqclrbwsapozcsx.supabase.co/';
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indoa2h4b3FjbHJid3NhcG96Y3N4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzA5MjI2OTMsImV4cCI6MjA0NjQ5ODY5M30.r9sVK-h_VhWEaFcpbItsegw3C3ColewPJMqad1xJXkk';
 const supabase = createClient(supabaseUrl, supabaseKey)
 const openai = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY,
+    apiKey: "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",
 });
 
 const app = express()
@@ -105,9 +105,44 @@ app.post("/feedback", async (req, res) => {
         console.log(activityError.message)
     }
 
-    //TODO: @Farhan add an entry to the rewards table for the user
-
-
+    if (user_id !== null) {
+        const { data: pointsData, error: pointsError } = await supabase
+            .from('14_user_points')
+            .select('points_balance')
+            .eq('user_id', user_id)
+            .single();
+      
+        if (!pointsData) {
+          // if usr doesnt already have data, insert
+          const { error: insertError } = await supabase
+              .from('14_user_points')
+              .insert({
+                  user_id: user_id,
+                  points_balance: 5 // start with 5 points for a new user
+              });
+      
+          if (insertError) {
+              console.log(insertError.message);
+          } else {
+              console.log('New user points entry created.');
+          }
+        } else {
+          // update points if user exists
+          const newPointsBalance = pointsData.points_balance + 5;
+      
+          const { error: updateError } = await supabase
+              .from('14_user_points')
+              .update({ points_balance: newPointsBalance })
+              .eq('user_id', user_id);
+      
+          if (updateError) {
+              console.log(updateError.message);
+          } else {
+              console.log('Points balance updated.');
+          }
+        }
+      }
+      
 
     return res.status(200).json({ sucess: true, data: data });
 })
