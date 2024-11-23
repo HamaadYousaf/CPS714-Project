@@ -18,7 +18,7 @@ function SubmissionForm() {
                 },
                 method: 'POST',
                 body: JSON.stringify({
-                    user_id: 1,
+                    user_id: anonymous ? null : 1,
                     rating,
                     comments,
                     is_anonymous: anonymous,
