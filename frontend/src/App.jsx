@@ -1,7 +1,10 @@
+import { useState } from 'react'
+import FeedbackDashboard from './components/FeedBack.jsx'
+
 function App() {
     return (
         <div className="text-6xl">
-            <h1>Hello World!</h1>
+            <FeedbackDashboard />
         </div>
     )
 }
